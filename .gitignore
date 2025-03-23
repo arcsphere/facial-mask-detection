@@ -10,4 +10,4 @@ __pycache__/
 venv/
 maskenv*
 .idea/
-model/
+model/model/
