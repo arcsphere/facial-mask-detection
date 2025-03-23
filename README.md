@@ -1,103 +1,114 @@
-# ***********************************************
-# 🎓 Assignment Submission by Arjun Shrivatsan (002028814)
-# 📚 Course: EAI 6010 - Applications of AI
-# 📦 Module 5: Face Mask Detection - Microservice Deployment
-# ***********************************************
+# 🎓 EAI 6010 - Assignment Submission
 
-## 🧠 About the Project
-
-This microservice detects whether a person in an image is:
-- Wearing a mask correctly 😷  
-- Not wearing a mask ❌  
-- Wearing a mask incorrectly ⚠️  
-
-It utilizes a deep learning model trained using **InceptionV3** on a labeled dataset of masked and unmasked faces, deployed via **FastAPI** and **Docker**.
+**Course:** EAI 6010 - Applications of AI  
+**Module:** 5 – Face Mask Detection Microservice  
+**Student:** Arjun Shrivatsan (002028814)  
+**Deployment:** [Live Demo on Render](https://facial-mask-detection.onrender.com)
 
 ---
 
-## ✅ What Does This Assignment Do?
+## 📘 About This Project
 
-- 📦 **Trains a Keras model** using OpenCV-preprocessed face regions.
-- ⚙️ **Converts the model** to `.keras` format for compatibility.
-- 🚀 **Deploys the model as a FastAPI microservice** using Docker.
-- 🌐 **Enables predictions through a Swagger UI** and HTTP endpoints.
+This microservice detects whether a person is wearing a mask using deep learning. It accepts an image input and responds with a classification: `Mask`, `No Mask`, or `Incorrectly Worn Mask`, along with a confidence score.
+
+It includes:
+- Preprocessing of face region from images
+- A trained InceptionV3-based model with softmax output
+- Dockerized FastAPI application for API-based access
+
+---
+
+## 🎯 What This Assignment Demonstrates
+
+- Image classification with transfer learning (InceptionV3)
+- TensorFlow model training and export
+- FastAPI microservice architecture
+- Docker containerization
+- RESTful API exposure with Swagger UI
+- GitHub integration and model file management
 
 ---
 
 ## 🚀 Running Instructions
 
-### 🔁 A. Running on Render (Swagger UI)
+### ✅ Hosted on Render
 
-> Deployed version (hosted):  
-📍 `https://<your-render-url>.onrender.com/docs`  
+**URL:** [`https://facial-mask-detection.onrender.com`](https://facial-mask-detection.onrender.com)
 
-- Upload an image via `/predict` endpoint.
-- Receive `prediction` and `confidence` score.
-
----
-
-### 💻 B. Running Locally
-
-1. **Build the Docker image:**
-   ```bash
-   docker build -t face-mask-api .
-   ```
-
-2. **Run the container:**
-   ```bash
-   docker run -p 8000:8000 face-mask-api
-   ```
-
-3. **Access Swagger UI:**
-   [http://localhost:8000/docs](http://localhost:8000/docs)
+1. Open the link.
+2. Navigate to `/docs` to access Swagger UI.
+3. Use the `POST /predict/` endpoint to upload an image and get predictions.
 
 ---
 
-### 🧪 C. cURL Test from Terminal
+### 💻 Run Locally (Docker)
 
 ```bash
+# Clone the repo
+git clone https://github.com/arcsphere/facial-mask-detection.git
+cd facial-mask-detection
+
+# Build Docker image
+docker build -t face-mask-api .
+
+# Run container
+docker run -p 8000:8000 face-mask-api
+
+# Open in browser
+http://localhost:8000/docs
+📡 Use via curl
+bash
+Copy
+Edit
 curl -X 'POST' \
-  'http://localhost:8000/predict' \
-  -F 'image=@/path/to/your/image.jpg' \
+  'http://localhost:8000/predict/' \
+  -F 'file=@test_image.jpg' \
   -H 'accept: application/json' \
   -H 'Content-Type: multipart/form-data'
-```
+⚙️ Installation (Without Docker)
+bash
+Copy
+Edit
+# Clone the project
+git clone https://github.com/arcsphere/facial-mask-detection.git
+cd facial-mask-detection
 
----
+# Create virtual environment
+python3 -m venv maskenv
+source maskenv/bin/activate
 
-## 📦 Installation (For Local Dev - Optional)
-
-```bash
-python -m venv maskenv
-source maskenv/bin/activate   # or maskenv\Scripts\activate on Windows
-
+# Install dependencies
+pip install --upgrade pip
 pip install -r requirements.txt
+
+# Start the app
 uvicorn app.app:app --reload
-```
+🧠 Tech Stack
+Model: InceptionV3 (Transfer Learning)
 
----
+Framework: FastAPI
 
-## 🛠️ Tech Stack
+Serving: Docker + Uvicorn
 
-| Layer             | Tech Used              |
-|------------------|------------------------|
-| Backend API      | FastAPI + Uvicorn      |
-| ML Framework     | TensorFlow + Keras     |
-| Image Processing | OpenCV                 |
-| Deployment       | Docker, Render         |
-| Swagger UI       | Built-in with FastAPI  |
-| Model Architecture | InceptionV3 (Transfer Learning) |
+Image Processing: OpenCV, NumPy
 
----
+Serialization: .keras model format
 
-## 📚 Resources and Citations
+Deployment: Render (free tier)
 
-- [TensorFlow Documentation](https://www.tensorflow.org/api_docs)
-- [Keras Model Saving/Loading](https://keras.io/guides/serialization_and_saving/)
-- [Face Mask Detection Dataset (MAFA-style annotations)](https://www.kaggle.com/datasets/andrewmvd/face-mask-detection)
-- [FastAPI Docs](https://fastapi.tiangolo.com/)
-- [OpenCV Docs](https://docs.opencv.org/)
+Version Control: Git + GitHub
 
----
+📁 Notes on Model File
+Due to GitHub’s 100MB limit, the model file (mask_detection.keras) is excluded from version control.
 
-🧠 *Built with responsibility to deploy machine learning as a real-world accessible service.*
+To load model in production (Render or Docker):
+
+python
+Copy
+Edit
+import os
+if not os.path.exists("model/mask_detection.keras"):
+    import gdown
+    gdown.download("https://drive.google.com/uc?id=YOUR_FILE_ID", "model/mask_detection.keras", quiet=False)
+Replace YOUR_FILE_ID with the Google Drive file ID.
+
