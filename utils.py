@@ -3,17 +3,32 @@
 # **** EAI 6010 - Assignment No: Module 5 - Face Mask Detection Microservice
 # *******************************************
 
+import os
 import cv2
 import numpy as np
 from tensorflow.keras.models import load_model as keras_load_model
 
-# Load the real Keras model from .h5
+# 🔁 Auto-download from Google Drive if not found locally
+def maybe_download_model():
+    model_path = "model/mask_detection.keras"
+    if not os.path.exists(model_path):
+        print("🔽 Model not found locally. Downloading from Google Drive...")
+        import gdown
+        os.makedirs("model", exist_ok=True)
+        # Replace with your actual Google Drive file ID
+        file_id = "1uAIfC2pCGBf8dAoytUrJ3IA0fY3dvH5D"
+        gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
+    else:
+        print("✅ Model file already exists locally.")
+
+# ✅ Load the Keras model (after making sure it's downloaded)
 def load_model():
+    maybe_download_model()
     print("✅ Loading real Keras model from model/mask_detection.keras")
     model = keras_load_model("model/mask_detection.keras")
     return model
 
-# Image preprocessing and prediction
+# 🔍 Image preprocessing and prediction
 def predict_mask(image, model):
     print("🔥 Real model is being used for prediction")
 
