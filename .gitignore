@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.zip
+*.h5
+*.ipynb_checkpoints
+*.DS_Store
+.env
+venv/
+maskenv*
+.idea/
