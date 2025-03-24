@@ -10,7 +10,7 @@ from tensorflow.keras.models import load_model as keras_load_model
 
 # File path setup
 MODEL_PATH = "model/mask_detection.keras"
-GDRIVE_FILE_ID = "1uAIfC2pCGBf8dAoytUrJ3IA0fY3dvH5D"  # Replace with actual file ID
+GDRIVE_FILE_ID = "1i34UA5MCk2yAB6rwe5heNPDnY52UN0c-"  # Replace with actual file ID
 
 def download_model():
     """Download model from Google Drive using gdown if not already present."""
