@@ -1,64 +1,50 @@
-# *******************************************
-# **** Assignment submission by Arjun Shrivatsan
-# **** EAI 6010 - Assignment No: Module 5 - Face Mask Detection Microservice
-# *******************************************
-
 import os
 import cv2
+import requests
 import numpy as np
 from tensorflow.keras.models import load_model as keras_load_model
 
-# File path setup
-MODEL_PATH = "model/mask_detection.keras"
-GDRIVE_FILE_ID = "1i34UA5MCk2yAB6rwe5heNPDnY52UN0c-"  # Replace with actual file ID
+def maybe_download_model():
+    model_path = "model/mask_detection.keras"
+    os.makedirs("model", exist_ok=True)
 
-def download_model():
-    """Download model from Google Drive using gdown if not already present."""
-    if not os.path.exists(MODEL_PATH):
-        print("📦 Model file not found. Downloading from Google Drive...")
-        try:
-            import gdown
-        except ImportError:
-            print("📦 Installing gdown...")
-            os.system("pip install gdown")
-            import gdown
+    if not os.path.exists(model_path):
+        print("🔽 Model not found locally. Downloading from Dropbox...")
 
-        gdown.download(
-            f"https://drive.google.com/uc?id={GDRIVE_FILE_ID}",
-            MODEL_PATH,
-            quiet=False
-        )
-        print("✅ Model downloaded successfully!")
+        # ✅ Dropbox direct download link (make sure ?dl=1)
+        download_url = "https://www.dropbox.com/scl/fi/o3euu5e9zamlfhx69q08i/mask_detection.keras?rlkey=pkwkoht40212gx5qgv0g5wf02&st=7frmma7e&dl=1"
 
-# Load the real Keras model
+        response = requests.get(download_url, stream=True)
+        if response.status_code == 200:
+            with open(model_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print("✅ Model downloaded successfully.")
+        else:
+            raise Exception(f"❌ Failed to download model. HTTP {response.status_code}")
+
 def load_model():
-    download_model()
-    print(f"✅ Loading real Keras model from {MODEL_PATH}")
-    model = keras_load_model(MODEL_PATH)
-    return model
+    print("✅ Loading Keras model from model/mask_detection.keras")
+    maybe_download_model()
+    return keras_load_model("model/mask_detection.keras")
 
-# Image preprocessing and prediction
 def predict_mask(image, model):
     print("🔥 Real model is being used for prediction")
 
-    # Convert to RGB
     img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Resize image
     img_resized = cv2.resize(img_rgb, (224, 224))
-
-    # Normalize and reshape
     img_array = np.array(img_resized) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict
     result = model.predict(img_array)[0]
     print(f"🧠 Raw model prediction output: {result}")
 
-    # Softmax for 3-class classification (mask, no mask, incorrect mask)
-    prediction_labels = ["Mask", "No Mask", "Incorrect Mask"]
-    prediction = prediction_labels[np.argmax(result)]
-    confidence = float(np.max(result))
+    if len(result) == 2:
+        prediction = "Mask" if np.argmax(result) == 0 else "No Mask"
+        confidence = float(np.max(result))
+    else:
+        prediction = "Mask" if result[0] > 0.5 else "No Mask"
+        confidence = float(result[0] if prediction == "Mask" else 1 - result[0])
 
     print(f"✅ Prediction: {prediction}, Confidence: {confidence}")
     return prediction, confidence
