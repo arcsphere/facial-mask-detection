@@ -1,52 +1,44 @@
-# *******************************************
-# **** Assignment submission by Arjun Shrivatsan
-# **** EAI 6010 - Assignment No: Module 5 - Face Mask Detection Microservice
-# *******************************************
-
 import os
 import cv2
+import requests
 import numpy as np
 from tensorflow.keras.models import load_model as keras_load_model
 
-# 🔁 Auto-download from Google Drive if not found locally
 def maybe_download_model():
     model_path = "model/mask_detection.keras"
+    os.makedirs("model", exist_ok=True)
+
     if not os.path.exists(model_path):
-        print("🔽 Model not found locally. Downloading from Google Drive...")
-        import gdown
-        os.makedirs("model", exist_ok=True)
-        # Replace with your actual Google Drive file ID
-        file_id = "1uAIfC2pCGBf8dAoytUrJ3IA0fY3dvH5D"
-        gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
-    else:
-        print("✅ Model file already exists locally.")
+        print("🔽 Model not found locally. Downloading from Dropbox...")
 
-# ✅ Load the Keras model (after making sure it's downloaded)
+        # ✅ Dropbox direct download link (make sure ?dl=1)
+        download_url = "https://www.dropbox.com/scl/fi/o3euu5e9zamlfhx69q08i/mask_detection.keras?rlkey=pkwkoht40212gx5qgv0g5wf02&st=7frmma7e&dl=1"
+
+        response = requests.get(download_url, stream=True)
+        if response.status_code == 200:
+            with open(model_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    f.write(chunk)
+            print("✅ Model downloaded successfully.")
+        else:
+            raise Exception(f"❌ Failed to download model. HTTP {response.status_code}")
+
 def load_model():
+    print("✅ Loading Keras model from model/mask_detection.keras")
     maybe_download_model()
-    print("✅ Loading real Keras model from model/mask_detection.keras")
-    model = keras_load_model("model/mask_detection.keras")
-    return model
+    return keras_load_model("model/mask_detection.keras")
 
-# 🔍 Image preprocessing and prediction
 def predict_mask(image, model):
     print("🔥 Real model is being used for prediction")
 
-    # Convert to RGB
     img_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Resize image
-    img_resized = cv2.resize(img_rgb, (224, 224))  # Adjust if your model needs a different size
-
-    # Normalize and reshape
+    img_resized = cv2.resize(img_rgb, (224, 224))
     img_array = np.array(img_resized) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    # Predict
     result = model.predict(img_array)[0]
     print(f"🧠 Raw model prediction output: {result}")
 
-    # Binary or Softmax classifier
     if len(result) == 2:
         prediction = "Mask" if np.argmax(result) == 0 else "No Mask"
         confidence = float(np.max(result))

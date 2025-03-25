@@ -11,3 +11,4 @@ venv/
 maskenv*
 .idea/
 model/mask_detection.keras
+model/
