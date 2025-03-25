@@ -5,14 +5,14 @@ import numpy as np
 from tensorflow.keras.models import load_model as keras_load_model
 
 def maybe_download_model():
-    model_path = "model/mask_detection.keras"
+    model_path = "model/mask_detection.h5"
     os.makedirs("model", exist_ok=True)
 
     if not os.path.exists(model_path):
         print("🔽 Model not found locally. Downloading from Dropbox...")
 
         # ✅ Dropbox direct download link (make sure ?dl=1)
-        download_url = "https://www.dropbox.com/scl/fi/o3euu5e9zamlfhx69q08i/mask_detection.keras?rlkey=pkwkoht40212gx5qgv0g5wf02&st=7frmma7e&dl=1"
+        download_url = "https://www.dropbox.com/scl/fi/li1dvx1e16tp1ozwm7qld/mask_detection.h5?rlkey=zv4ajq4if8l2vp0h1oazy3pob&st=i4fac6z8&dl=0"
 
         response = requests.get(download_url, stream=True)
         if response.status_code == 200:
@@ -24,9 +24,9 @@ def maybe_download_model():
             raise Exception(f"❌ Failed to download model. HTTP {response.status_code}")
 
 def load_model():
-    print("✅ Loading Keras model from model/mask_detection.keras")
+    print("✅ Loading Keras model from model/mask_detection.h5")
     maybe_download_model()
-    return keras_load_model("model/mask_detection.keras")
+    return keras_load_model("model/mask_detection.h5")
 
 def predict_mask(image, model):
     print("🔥 Real model is being used for prediction")
