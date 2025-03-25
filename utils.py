@@ -12,7 +12,7 @@ def maybe_download_model():
         print("🔽 Model not found locally. Downloading from Dropbox...")
 
         # ✅ Dropbox direct download link (make sure ?dl=1)
-        download_url = "https://www.dropbox.com/scl/fi/li1dvx1e16tp1ozwm7qld/mask_detection.h5?rlkey=zv4ajq4if8l2vp0h1oazy3pob&st=i4fac6z8&dl=0"
+        download_url = "https://www.dropbox.com/scl/fi/li1dvx1e16tp1ozwm7qld/mask_detection.h5?rlkey=zv4ajq4if8l2vp0h1oazy3pob&st=fjju9p5q&dl=1"
 
         response = requests.get(download_url, stream=True)
         if response.status_code == 200:
